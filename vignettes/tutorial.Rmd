@@ -1,0 +1,20 @@
+---
+title: "project3package Tutorial"
+author: "Benjamin Paul Lowry"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{project3package Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(project3package)
+```

@@ -2,63 +2,77 @@
 # Two-sided Tests
 #
 two_sided_test <- my_t.test(c(0.5, 1.0, 1.5, 2.0), "two.sided", 1.0)
+two_sides_expected <- t.test(c(0.5, 1.0, 1.5, 2.0), alternative = "two.sided",
+                             mu = 1.0)
 
 test_that("my_t.test returns correct two-sided t test test stat", {
-  expect_true(abs(two_sided_test$test_stat - 0.7746) < 0.001)
+  expect_equal(two_sided_test$test_stat, two_sides_expected$statistic[["t"]])
 })
 
 test_that("my_t.test returns correct two-sided t test df", {
-  expect_equal(two_sided_test$df, 3)
+  expect_equal(two_sided_test$df, two_sides_expected$parameter[["df"]])
 })
 
 test_that("my_t.test returns correct two-sided t test alternative", {
-  expect_match(two_sided_test$alternative, "two.sided")
+  expect_match(two_sided_test$alternative, two_sides_expected$alternative)
 })
 
 test_that("my_t.test returns correct two-sided t test p value", {
-  expect_true(abs(two_sided_test$p_val - 0.4950) < 0.001)
+  expect_equal(two_sided_test$p_val, two_sides_expected$p.value)
 })
 
 #
 # One-sided Tests (Alternative: Less)
 #
 one_sided_test_less <- my_t.test(c(1.7, 2.1, 4.8, 3.2, 4.5), "less", 2.2)
+one_sided_test_less_expected <- t.test(c(1.7, 2.1, 4.8, 3.2, 4.5),
+                                       alternative = "less", mu = 2.2)
 
 test_that("my_t.test returns correct two-sided t test test stat", {
-  expect_true(abs(one_sided_test_less$test_stat - 1.7092) < 0.001)
+  expect_equal(one_sided_test_less$test_stat,
+               one_sided_test_less_expected$statistic[["t"]])
 })
 
 test_that("my_t.test returns correct two-sided t test df", {
-  expect_equal(one_sided_test_less$df, 4)
+  expect_equal(one_sided_test_less$df,
+               one_sided_test_less_expected$parameter[["df"]])
 })
 
 test_that("my_t.test returns correct two-sided t test alternative", {
-  expect_match(one_sided_test_less$alternative, "less")
+  expect_match(one_sided_test_less$alternative,
+               one_sided_test_less_expected$alternative)
 })
 
 test_that("my_t.test returns correct two-sided t test p value", {
-  expect_true(abs(one_sided_test_less$p_val - 0.9187) < 0.001)
+  expect_equal(one_sided_test_less$p_val, one_sided_test_less_expected$p.value)
 })
 
 #
 # One-sided Tests (Alternative: Greater)
 #
-one_sided_test_less <- my_t.test(c(1.7, 4.1, 4.8, 5.2, 2.5), "greater", 3.7)
+one_sided_test_greater <- my_t.test(c(1.7, 4.1, 4.8, 5.2, 2.5), "greater", 3.7)
+one_sided_test_greater_expected <- t.test(c(1.7, 4.1, 4.8, 5.2, 2.5),
+                                          alternative = "greater", mu = 3.7)
+
 
 test_that("my_t.test returns correct two-sided t test test stat", {
-  expect_true(abs(one_sided_test_less$test_stat - (-0.0595)) < 0.001)
+  expect_equal(one_sided_test_greater$test_stat,
+               one_sided_test_greater_expected$statistic[["t"]])
 })
 
 test_that("my_t.test returns correct two-sided t test df", {
-  expect_equal(one_sided_test_less$df, 4)
+  expect_equal(one_sided_test_greater$df,
+               one_sided_test_greater_expected$parameter[["df"]])
 })
 
 test_that("my_t.test returns correct two-sided t test alternative", {
-  expect_match(one_sided_test_less$alternative, "greater")
+  expect_match(one_sided_test_greater$alternative,
+               one_sided_test_greater_expected$alternative)
 })
 
 test_that("my_t.test returns correct two-sided t test p value", {
-  expect_true(abs(one_sided_test_less$p_val - 0.5223) < 0.001)
+  expect_equal(one_sided_test_greater$p_val,
+               one_sided_test_greater_expected$p.value)
 })
 
 #

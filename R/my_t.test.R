@@ -2,15 +2,15 @@
 #'
 #' This function performs a t test given data and a hypothesis.
 #'
-#' @param x Vector of numerics representing sample data
+#' @param x Vector of numerics representing sample data.
 #' @param alternative String containing type of alternative hypothesis with
-#'   one of the following values "two.sided", "less", or "greater"
-#' @param mu Numeric containing null hypothesis mean value
+#'   one of the following values "two.sided", "less", or "greater".
+#' @param mu Numeric containing null hypothesis mean value.
 #' @keywords inference
 #'
 #' @return List containing "test_stat": the t statistic calculated, "df": the
 #'   degrees of freedom, "alternative": the value of \code{alternative},
-#'   "p_val": the p-value calculated from the t test
+#'   "p_val": the p-value calculated from the t test.
 #'
 #' @examples
 #' my_t.test(c(0.5, 0.6, 0, 1.5, 4), "two.sided", 2)

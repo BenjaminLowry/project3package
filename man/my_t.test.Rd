@@ -7,17 +7,17 @@
 my_t.test(x, alternative, mu)
 }
 \arguments{
-\item{x}{Vector of numerics representing sample data}
+\item{x}{Vector of numerics representing sample data.}
 
 \item{alternative}{String containing type of alternative hypothesis with
-one of the following values "two.sided", "less", or "greater"}
+one of the following values "two.sided", "less", or "greater".}
 
-\item{mu}{Numeric containing null hypothesis mean value}
+\item{mu}{Numeric containing null hypothesis mean value.}
 }
 \value{
 List containing "test_stat": the t statistic calculated, "df": the
 degrees of freedom, "alternative": the value of \code{alternative},
-"p_val": the p-value calculated from the t test
+"p_val": the p-value calculated from the t test.
 }
 \description{
 This function performs a t test given data and a hypothesis.

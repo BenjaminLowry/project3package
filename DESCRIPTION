@@ -25,4 +25,5 @@ Imports:
     tibble,
     dplyr,
     magrittr,
-    stats
+    stats,
+    class

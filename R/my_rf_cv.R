@@ -33,9 +33,9 @@ my_rf_cv <- function(k) {
     model <- randomForest::randomForest(
       body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm,
       data = data_train, ntree = 100)
-    predictions <- predict(model, data_test[, -6])
+    predictions <- stats::predict(model, data_test[, -6])
 
-    sse <- sse + sum(((train_fold %>% filter(split == i))[6] - predictions)^2)
+    sse <- sse + sum(((train_fold %>% dplyr::filter(split == i))[6] - predictions)^2)
   }
 
   return(sse / nrow(my_penguins))

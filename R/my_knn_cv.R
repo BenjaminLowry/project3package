@@ -41,10 +41,9 @@ my_knn_cv <- function(train, cl, k_nn, k_cv) {
     class[fold == i] <- class::knn(data_train, data_test, cl[fold != i], k_nn)
 
     num_incorrect <- num_incorrect +
-      length(which(suppressWarnings(as.numeric(cl[fold == i])) != class[fold == i]))
+      length(which(suppressWarnings(as.numeric(cl[fold == i])) !=
+                     class[fold == i]))
   }
-  print(class)
-  print(cl)
 
   cv_err <- num_incorrect / nrow(train)
   return(list("class" = class, "cv_err" = cv_err))

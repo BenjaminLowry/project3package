@@ -1,3 +1,5 @@
 ^project3package\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^doc$
+^Meta$

@@ -113,11 +113,13 @@ train_errs <- vector(length = 10)
 
 for (i in 1:10) {
   cv_errs[i] <- my_knn_cv(covariates, class, i, 5)$cv_err
-  
-  train_errs[i] <- length(which(class::knn(covariates, covariates, class, i) != class)) / 
+  # Count how many data points are misclassified using normal knn
+  train_errs[i] <- 
+    length(which(class::knn(covariates, covariates, class, i) != class)) / 
     nrow(my_penguins)
 }
 
+# Show table of errors
 err_df <- cbind(1:10, data.frame(cv_errs), data.frame(train_errs))
 colnames(err_df) <- c("k_nn", "cv_errs", "train_errs")
 err_df
@@ -146,11 +148,13 @@ ggplot(data = mse_df, aes(group = k, x = k, y = mse)) +
   theme_bw() + 
   theme(plot.title = element_text(hjust = 0.5))
 
+# Get vectors of MSE by value of k
 mse_k2 <- (mse_df %>% dplyr::filter(k == 2) %>% dplyr::select(mse))$mse
 mse_k5 <- (mse_df %>% dplyr::filter(k == 5) %>% dplyr::select(mse))$mse
 mse_k10 <- (mse_df %>% dplyr::filter(k == 10) %>% dplyr::select(mse))$mse
 
-mse_stats_mat <- rbind(c(2, mean(mse_k2), sd(mse_k2)), c(5, mean(mse_k5), sd(mse_k5)), 
+mse_stats_mat <- rbind(c(2, mean(mse_k2), sd(mse_k2)), 
+                       c(5, mean(mse_k5), sd(mse_k5)), 
                        c(10, mean(mse_k10), sd(mse_k10)))
 
 mse_stats_df <- data.frame(k = mse_stats_mat[,1],

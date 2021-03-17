@@ -13,6 +13,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(ggplot2)
+library(kableExtra)
 ```
 
 This package contains 4 statistics functions for inference/prediction:
@@ -85,8 +88,6 @@ my_fit
 The hypothesis test associated with this coefficient is: $H_0: \beta_1 = 0, H_a: \beta_1 \ne 0$ where $\beta_1$ is the coefficient for "gdpPercap". The p-value for the t statistic given by the fit is `r my_fit[[4]][2]` which is much much less than $\alpha = 0.5$ and thus we reject the null hypothesis that $\beta_1 = 0$. 
 
 ```{r}
-library(ggplot2)
-
 lm_fit <- lm(lifeExp ~ gdpPercap * continent, 
              my_gapminder[c("lifeExp", "gdpPercap", "continent")])
 mod_fits <- fitted(lm_fit)
@@ -123,3 +124,40 @@ err_df
 ```
 
 With the goal of minimizing error, I would choose the k_nn = 1 model when considering both the CV error and the training error since this is where the error is the lowest in both cases. However, in practice we know that training error is going to be zero with k_nn = 1 since the data is used for both the training and the testing, and that this model is likely overfitted for the given data and will not generalize well to new data. Choosing a cross validation model will be much better in this respect since it was trained with 5 folds which separate the training and test data to be disjoint sets (where every fold is the test set once and all other folds are the training data for that iteration of the cross validation) and thus in this way better trains the model to be more accurate when tested on data that it has never seen before. The best CV model based on the table above is the where k_nn = 1 (since it has lowest misclassification error) and so this is the model I would choose.
+
+
+## my_rf_cv
+
+```{r}
+mse_matrix <- matrix(nrow = 90, ncol = 2)
+ks <- c(2, 5, 10)
+for (i in 1:3) {
+  k <- ks[i]
+  for (j in 1:30) {
+    mse_matrix[(i-1)*30+j, 1] <- k
+    mse_matrix[(i-1)*30+j, 2] <- my_rf_cv(k)
+  }
+}
+mse_df <- data.frame(k = mse_matrix[,1], mse = mse_matrix[,2])
+
+ggplot(data = mse_df, aes(group = k, x = k, y = mse)) + 
+  geom_boxplot() +
+  labs(title = "MSE by Number of Folds", x = "Number of Folds", y = "MSE") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+mse_k2 <- (mse_df %>% dplyr::filter(k == 2) %>% dplyr::select(mse))$mse
+mse_k5 <- (mse_df %>% dplyr::filter(k == 5) %>% dplyr::select(mse))$mse
+mse_k10 <- (mse_df %>% dplyr::filter(k == 10) %>% dplyr::select(mse))$mse
+
+mse_stats_mat <- rbind(c(2, mean(mse_k2), sd(mse_k2)), c(5, mean(mse_k5), sd(mse_k5)), 
+                       c(10, mean(mse_k10), sd(mse_k10)))
+
+mse_stats_df <- data.frame(k = mse_stats_mat[,1],
+                           mse_mean = mse_stats_mat[,2], 
+                           mse_sd = mse_stats_mat[,3])
+kable_styling(kable(mse_stats_df))
+```
+
+The box plot shows that first of all, the mean MSE decreases as the number of folds increases, with the largest decrease happening between k = 2 and k = 5. It also shows the range and standard deviation of the MSEs decreasing significantly as the number of folds increases. This is substantiated by the table which shows the mean dropping by about 4% from k = 2 to k = 5 and then dropping 0.5% from k = 5 to k = 10, and also shows the standard deviation decreasing by about 30% from k = 2 to k = 5 and then decreasing another 36% from k = 5 to k = 10. This shows that the relative magnitude of the standard deviation's decrease is larger than the relative magnitude that the mean decreases by. I think that MSE decreases as number of folds increases perhaps because when there are fewer folds, the test data sets are quite large relative to the size of the training sets, which makes me think that there is not enough data to train the iteration of the cross validation in order to accurately predict the number of test data points that are given, and this lower accuracy results in higher MSE. This improves as the number of folds increase as the test set becomes small relative to all the data points that the model is trained on. I think this is also related to why the standard deviation of the MSE decreases because when there are fewer folds, if the data is split in a way where the training and test data is fairly different or fairly the same then you'll see relatively high and low MSE's, respectively. So the way the data is split can affect the MSE more when there are less folds compared to when there are more folds when the splitting isn't as impactful on the overall MSE.
+

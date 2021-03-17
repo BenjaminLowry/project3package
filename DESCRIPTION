@@ -28,4 +28,5 @@ Imports:
     stats,
     class,
     randomForest,
-    ggplot2
+    ggplot2,
+    kableExtra

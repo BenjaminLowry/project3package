@@ -27,4 +27,5 @@ Imports:
     magrittr,
     stats,
     class,
-    randomForest
+    randomForest,
+    ggplot2

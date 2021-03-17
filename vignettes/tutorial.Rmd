@@ -101,5 +101,25 @@ ggplot(my_df, aes(x = fitted, y = actual)) +
 
 This plot shows that this fit is not great at explaining the relationship between the variables. Especially at small values of $\hat{y}$, the variance away from the fit is quite large. There are sections that match the fit quite well like from the fitted values from 70 to 80, but overall I think this graph shows that you would likely want to experiment with the model you are using to related life expectancy, GDP per capita, and continent since this fit is no where near a clean fit.
 
+## my_knn_cv
 
+```{r}
+covariates <- my_penguins[c("bill_length_mm", "bill_depth_mm", 
+                            "flipper_length_mm", "body_mass_g")]
+class <- my_penguins[["species"]]
+cv_errs <- vector(length = 10)
+train_errs <- vector(length = 10)
 
+for (i in 1:10) {
+  cv_errs[i] <- my_knn_cv(covariates, class, i, 5)$cv_err
+  
+  train_errs[i] <- length(which(class::knn(covariates, covariates, class, i) != class)) / 
+    nrow(my_penguins)
+}
+
+err_df <- cbind(1:10, data.frame(cv_errs), data.frame(train_errs))
+colnames(err_df) <- c("k_nn", "cv_errs", "train_errs")
+err_df
+```
+
+With the goal of minimizing error, I would choose the k_nn = 1 model when considering both the CV error and the training error since this is where the error is the lowest in both cases. However, in practice we know that training error is going to be zero with k_nn = 1 since the data is used for both the training and the testing, and that this model is likely overfitted for the given data and will not generalize well to new data. Choosing a cross validation model will be much better in this respect since it was trained with 5 folds which separate the training and test data to be disjoint sets (where every fold is the test set once and all other folds are the training data for that iteration of the cross validation) and thus in this way better trains the model to be more accurate when tested on data that it has never seen before. The best CV model based on the table above is the where k_nn = 1 (since it has lowest misclassification error) and so this is the model I would choose.

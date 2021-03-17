@@ -15,6 +15,91 @@ knitr::opts_chunk$set(
 )
 ```
 
+This package contains 4 statistics functions for inference/prediction:
+<ul>`my_t.test`: performs a t-test</ul>
+<ul>`my_lm`: fits data to a model</ul>
+<ul>`my_knn_cv`: performs k-nearest-neighbor cross validation for statistical prediction</ul>
+<ul>`my_rf_cv`: performs random forest cross validation for statistical prediction</ul>
+
+Below are instructions for getting started:
+
+## Installation
+
+You can download the package from GitHub:
+
+``` {r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("BenjaminLowry/project3package", build_vignette = TRUE, 
+                         build_opts = c())
+```
+
+Then import the package via:
+
 ```{r setup}
 library(project3package)
 ```
+
+## my_t.test
+
+Below are three examples of t-tests that can be performed with `my_t.test` using the `lifeExp` (life expectancy) data from `my_gapminder` which is included in the package:
+
+<u>Test #1:</u> $H_0 : \mu = 60, H_a : \mu \ne 60$
+
+```{r}
+test_1 <- my_t.test(my_gapminder$lifeExp, "two.sided", 60)
+test_1
+```
+
+With $\alpha = 0.05$, the p-value indicates that this t statistic is not significant since `r test_1$p_val` > $\alpha$ and thus we do not reject the null hypothesis.
+
+<u>Test #2:</u> $H_0 : \mu = 60, H_a : \mu < 60$
+
+```{r}
+test_2 <- my_t.test(my_gapminder$lifeExp, "less", 60)
+test_2
+```
+
+With $\alpha = 0.05$, the p-value indicates that this t statistic is significant since `r test_2$p_val` < $\alpha$ and thus we reject the null hypothesis.
+
+<u>Test #3:</u> $H_0 : \mu = 60, H_a : \mu > 60$
+
+```{r}
+test_3 <- my_t.test(my_gapminder$lifeExp, "greater", 60)
+test_3
+```
+
+With $\alpha = 0.05$, the p-value indicates that this t statistic is not significant since `r test_3$p_val` > $\alpha$ and thus we do not reject the null hypothesis.
+
+## my_lm
+
+Below is an example of using `my_lm` to perform a regression where `my_gapminder$lifeExp` is the response variable and `my_gapminder$gdpPercap` and `my_gapminder$continent` are the explanatory variables.
+
+```{r}
+my_fit <- my_lm(lifeExp ~ gdpPercap * continent, 
+                my_gapminder[c("lifeExp", "gdpPercap", "continent")])
+my_fit
+```
+
+"gdpPercap" has a coefficient of `r my_fit$Estimate[2]` as shown in the table above. This means that if all other variables stayed the same (and thus we were ignoring the prescence or effect of the interaction variables in the table above) then for every increase in unit of GDP per capita in a country would correlate with an increase of `r my_fit$Estimate[2]` years of life expectancy.
+
+The hypothesis test associated with this coefficient is: $H_0: \beta_1 = 0, H_a: \beta_1 \ne 0$ where $\beta_1$ is the coefficient for "gdpPercap". The p-value for the t statistic given by the fit is `r my_fit[[4]][2]` which is much much less than $\alpha = 0.5$ and thus we reject the null hypothesis that $\beta_1 = 0$. 
+
+```{r}
+library(ggplot2)
+
+lm_fit <- lm(lifeExp ~ gdpPercap * continent, 
+             my_gapminder[c("lifeExp", "gdpPercap", "continent")])
+mod_fits <- fitted(lm_fit)
+my_df <- data.frame(actual = my_gapminder$lifeExp, fitted = mod_fits)
+ggplot(my_df, aes(x = fitted, y = actual)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, col = "red", lty = 2) + 
+  theme_bw(base_size = 12) +
+  labs(x = "Fitted values", y = "Actual values", title = "Actual vs. Fitted") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+This plot shows that this fit is not great at explaining the relationship between the variables. Especially at small values of $\hat{y}$, the variance away from the fit is quite large. There are sections that match the fit quite well like from the fitted values from 70 to 80, but overall I think this graph shows that you would likely want to experiment with the model you are using to related life expectancy, GDP per capita, and continent since this fit is no where near a clean fit.
+
+
+
